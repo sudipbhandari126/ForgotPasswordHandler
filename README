@@ -1,0 +1,4 @@
+This is a ForgotPasswordHandler written in java with MySql database.
+
+Universally Unique Identifier(UUID code) is emailed to the user who can use it 
+and reset the password.
