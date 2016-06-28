@@ -6,23 +6,18 @@
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import java.util.*;
+import java.sql.*;
 /**
  *
  * @author SudipBhandari
  */
-public class reset extends HttpServlet {
+public class linkverifier extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -36,35 +31,38 @@ public class reset extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String email = request.getParameter("email");
-        String password = request.getParameter("password");
-        String tempemail;
         PrintWriter pw = response.getWriter();
-        int flag=0;
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-         Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/aindra","root","12345");
-         Statement st = con.createStatement();
-         ResultSet rs = st.executeQuery("select * from list");
         
-         while (rs.next())
-         {
-         tempemail =  rs.getString("email");
-         if (email.equals(tempemail))
-         {
-             st.execute("update  list set password='"+password+"' where email = '"+email+"';");
-             
-             response.sendRedirect("index.html");
-             flag=1;
-             break;
-         }
-         }
-         
+        String token = request.getParameter("token");
+        String name = request.getParameter("name");
+        
+        try {
+        Class.forName("com.mysql.jdbc.Driver");
+        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/aindra","root","12345");
+        Statement st = con.createStatement();
+        ResultSet rs = st.executeQuery("select * from reset_links");
+        int flag = 0;
+        while (rs.next())
+        {
+        String temail =rs.getString("email");
+        String tname = rs.getString("name");
+        String uuid = rs.getString("uuid");
+        if (token.equals(uuid) && name.equals(tname))
+        {
+            st.execute("delete from reset_links where uuid='"+uuid+"';");
+            //response.sendRedirect("newjsp.jsp?name="+name);
+            response.sendRedirect("passwordreset.html");
+            flag=1;
+            break;
         }
-        catch (SQLException|ClassNotFoundException ex) {
-            ex.printStackTrace();
         }
-        if (flag==0) pw.print("No such email exists");
+        
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -20,6 +20,7 @@ import javax.mail.*;
 import javax.mail.internet.*;  
 import javax.activation.*; 
 import java.util.*;
+import java.net.*;
 
 /**
  *
@@ -39,9 +40,7 @@ public class sample extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        File file = new File("log.txt");
-        file.createNewFile();
-        
+       
         
         String uuid = null;  
         PrintWriter pw = response.getWriter();
@@ -51,6 +50,7 @@ public class sample extends HttpServlet {
          String temp = null;
         response.setContentType("text/html;charset=UTF-8");
         String name = request.getParameter("username");
+        
       try {
       Class.forName("com.mysql.jdbc.Driver");
       Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/aindra","root","12345");
@@ -83,7 +83,7 @@ public class sample extends HttpServlet {
       
       String host = "smtp.gmail.com";
       String username = "johnlennon.post";
-      String password = "**********";
+      String password = "*****";
       
       
       Properties properties = System.getProperties();
@@ -93,7 +93,7 @@ public class sample extends HttpServlet {
       properties.put("mail.smtp.host", "smtp.gmail.com");
       properties.put("mail.smtp.user", username);
       properties.put("mail.smpt.password", password);
-      properties.put("mail.smtp.port", 587);
+      properties.put("mail.smtp.port", 25);
       //properties.put("mail.smtp.auth", true);
       
       Session session = Session.getInstance(properties);
@@ -107,32 +107,39 @@ public class sample extends HttpServlet {
          
          uuid = UUID.randomUUID().toString();
          
+         
          //store the code in table
          Class.forName("com.mysql.jdbc.Driver");
          Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/aindra","root","12345");
          Statement st = con.createStatement();
-         st.execute("insert into uuid values('"+to+"','"+uuid+"');");
          
          
-         message.setText(uuid);  
-  
          
+        //message.setText(uuid);  
+        URL domain = new URL("http://localhost:8080/testing/");
+        URL url = new URL(domain+"?name="+name+"?uuid="+uuid);
+        
+        
+        
+        String resetlink = "http://localhost:8080/testing/linkverifier?name="+name+"&token="+uuid;
+                
+                
+        message.setText(resetlink);
+         
+        
          
          Transport.send(message,username,password);
-         
-         response.sendRedirect("entercode.html");
-         
+         pw.print("Password reset URL has been sent, please check your inbox");
+         //response.sendRedirect("entercode.html");
+         st.execute("insert into reset_links values('"+to+"','"+name+"','"+uuid+"');");
   
       }catch (MessagingException mex) {
-           FileWriter fw = new FileWriter(file);
-           fw.write(mex.toString());
-           fw.flush();
-           fw.close();
+           
            mex.printStackTrace(pw);
       }  
        catch (ClassNotFoundException  | SQLException e)
        {
-           e.printStackTrace();
+           e.printStackTrace(pw);
        }
       
       

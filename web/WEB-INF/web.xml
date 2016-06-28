@@ -12,6 +12,14 @@
         <servlet-name>reset</servlet-name>
         <servlet-class>reset</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>linkverify</servlet-name>
+        <servlet-class>linkverify</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>linkverifier</servlet-name>
+        <servlet-class>linkverifier</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>sample</servlet-name>
         <url-pattern>/sample</url-pattern>
@@ -23,6 +31,14 @@
     <servlet-mapping>
         <servlet-name>reset</servlet-name>
         <url-pattern>/reset</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>linkverify</servlet-name>
+        <url-pattern>/linkverify</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>linkverifier</servlet-name>
+        <url-pattern>/linkverifier</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
